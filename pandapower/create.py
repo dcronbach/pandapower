@@ -5,7 +5,7 @@
 
 
 import pandas as pd
-from numpy import nan, isnan, arange, dtype, zeros, isin, float64, all as np_all, any as np_any
+from numpy import nan, isnan, arange, dtype, zeros, float64, all as np_all
 from packaging import version
 
 from pandapower.auxiliary import pandapowerNet, get_free_id, _preserve_dtypes
@@ -705,16 +705,16 @@ def create_loads(net, buses, p_mw, q_mvar=0, const_z_percent=0, const_i_percent=
         create_loads(net, buses=[0, 2], p_mw=[10., 5.], q_mvar=[2., 0.])
 
     """
-    if np_any(~isin(buses, net["bus"].index.values)):
+    if set(buses) - set(net["bus"].index):
         raise UserWarning("Cannot attach to buses %s, they does not exist"
-                          % net["bus"].index.values[~isin(net["bus"].index.values, buses)])
+                          % (set(buses) - set(net["bus"].index)))
 
     if index is None:
         bid = get_free_id(net["load"])
         index = arange(bid, bid + len(buses), 1)
-    elif np_any(isin(index, net["load"].index.values)):
+    elif set(index) & set(net["load"].index.values):
         raise UserWarning("Loads with the ids %s already exists"
-                          % net["load"].index.values[isin(net["load"].index.values, index)])
+                          % (set(index) & set(net["load"].index.values)))
 
     # store dtypes
     dtypes = net.load.dtypes
