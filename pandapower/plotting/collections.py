@@ -865,7 +865,7 @@ def create_sgen_collection(net, sgens=None, size=1., infofunc=None, orientation=
     """
     gens = get_index_array(sgens, net.sgen.index)
     infos = [infofunc(i) for i in range(len(sgens))] if infofunc is not None else []
-    node_coords = net.bus_geodata.loc[net.sgen.loc[sgens, "bus"].values, ["x", "y"]].values
+    node_coords = net.bus_geodata.loc[net.sgen.loc[gens, "bus"].values, ["x", "y"]].values
     sgen_pc, sgen_lc = _create_node_element_collection(
         node_coords, sgen_patches, size=size, infos=infos, orientation=orientation,
         picker=picker, **kwargs)

@@ -17,6 +17,8 @@ from pandapower.pypower.idx_bus import VM, VA, NONE, BUS_TYPE
 from pandapower.run import _init_runpp_options
 from pandapower.timeseries.read_batch_results import v_to_i_s, get_batch_line_results, get_batch_trafo3w_results, \
     get_batch_trafo_results, get_batch_bus_results
+import pandapipes as ppipe
+import pandapower as pp
 
 try:
     import pplog
@@ -85,8 +87,12 @@ class OutputWriter(JSONSerializableClass):
         self.write_time = write_time
         self.log_variables = log_variables
         # these are the default log variables which are added if log_variables is None
-        self.default_log_variables = [("res_bus", "vm_pu"), ("res_line", "loading_percent")]
-        self._add_log_defaults()
+        if isinstance(net, ppipe.pandapipesNet):
+            self.default_log_variables = [('res_junction', 'p_bar'), ('res_junction', 't_k')]
+            self._add_log_defaults()
+        elif isinstance(net, pp.auxiliary.pandapowerNet):
+            self.default_log_variables = [("res_bus", "vm_pu"), ("res_line", "loading_percent")]
+            self._add_log_defaults()
 
         self.csv_separator = csv_separator
         if write_time is not None:
@@ -183,7 +189,7 @@ class OutputWriter(JSONSerializableClass):
                 # if output_list contains functools.partial
                 table = partial.args[0]
                 variable = partial.args[1]
-            if table != "Parameters":
+            if table is not "Parameters":
                 file_path = os.path.join(self.output_path, table)
                 mkdirs_if_not_existent(file_path)
                 if append:
