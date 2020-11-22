@@ -153,10 +153,51 @@ def coords_from_node_geodata(element_indices, from_nodes, to_nodes, node_geodata
               in np.concatenate([node_geodata.loc[fb_with_geo, ["x", "y"]].values,
                                  node_geodata.loc[tb_with_geo, ["x", "y"]].values], axis=1)
               if not (x_from == x_to and y_from == y_to)]
+
     elements_without_geo = set(element_indices) - set(elements_with_geo)
     if len(elements_without_geo) > 0:
         logger.warning("No coords found for %s %s. %s geodata is missing for those %s!"
                        % (table_name + "s", elements_without_geo, node_name, table_name + "s"))
+    return coords, elements_with_geo
+
+
+def coords_from_node_geodata_hp(element_indices, from_nodes, to_nodes, node_geodata, table_name,
+                             node_name="Bus"):
+    """
+    Auxiliary function to get the node coordinates for a number of branches with respective from
+    and to nodes. The branch elements for which there is no geodata available are not included in
+    the final list of coordinates.
+
+    :param element_indices: Indices of the branch elements for which to find node geodata
+    :type element_indices: iterable
+    :param from_nodes: Indices of the starting nodes
+    :type from_nodes: iterable
+    :param to_nodes: Indices of the ending nodes
+    :type to_nodes: iterable
+    :param node_geodata: Dataframe containing x and y coordinates of the nodes
+    :type node_geodata: pd.DataFrame
+    :param table_name: Name of the table that the branches belong to (only for logging)
+    :type table_name: str
+    :param node_name: Name of the node type (only for logging)
+    :type node_name: str, default "Bus"
+    :return: Return values are:\
+        - coords (list) - list of branch coordinates of shape (N, (2, 2))\
+        - elements_with_geo (set) - the indices of branch elements for which coordinates wer found\
+            in the node geodata table
+    """
+    have_geo = np.isin(from_nodes, node_geodata.index.values) \
+               & np.isin(to_nodes, node_geodata.index.values)
+    elements_with_geo = element_indices[have_geo]
+    fb_with_geo, tb_with_geo = from_nodes[have_geo], to_nodes[have_geo]
+    coords = [[(x_from, y_from), (x_to, y_to)] for x_from, y_from, x_to, y_to
+              in np.concatenate([node_geodata.loc[fb_with_geo, ["x", "y"]].values,
+                                 node_geodata.loc[tb_with_geo, ["x", "y"]].values], axis=1)
+              if not (x_from == x_to and y_from == y_to)]
+
+    #elements_without_geo = set(element_indices) - set(elements_with_geo)
+#    if len(elements_without_geo) > 0:
+    #    logger.warning("No coords found for %s %s. %s geodata is missing for those %s!"
+    #                   % (table_name + "s", elements_without_geo, node_name, table_name + "s"))
     return coords, elements_with_geo
 
 

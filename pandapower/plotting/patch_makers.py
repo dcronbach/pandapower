@@ -11,7 +11,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-def node_patches(node_coords, size, patch_type, colors=None, **kwargs):
+def node_patches(node_coords, size, patch_type, colors='blue', **kwargs):
     """
     Creates node patches from coordinates translating the patch type into patches.
 
@@ -282,7 +282,7 @@ def ext_grid_patches(node_coords, size, angles, **kwargs):
     """
     offset = kwargs.get("offset", 2 * size)
     all_angles = get_angle_list(angles, len(node_coords))
-    edgecolor = kwargs.get("patch_edgecolor", "w")
+    edgecolor = kwargs.get("patch_edgecolor", "blue")
     facecolor = kwargs.get("patch_facecolor", "w")
     edgecolors = get_color_list(edgecolor, len(node_coords))
     facecolors = get_color_list(facecolor, len(node_coords))
@@ -291,10 +291,10 @@ def ext_grid_patches(node_coords, size, angles, **kwargs):
         p2 = node_geo + _rotate_dim2(np.array([0, offset]), all_angles[i])
         p_ll = p2 + _rotate_dim2(np.array([-size, 0]), all_angles[i])
         polys.append(Rectangle(p_ll, 2 * size, 2 * size, angle=(-all_angles[i] / np.pi * 180),
-                               fc=facecolors[i], ec=edgecolors[i], hatch="XXX"))
+                               fc=facecolors[i], ec='blue', hatch="XXX"))
         lines.append((node_geo, p2))
     return lines, polys, {"offset", "patch_edgecolor", "patch_facecolor"}
-
+    #edgecolors[i]
 
 def trafo_patches(coords, size, **kwargs):
     """
@@ -317,8 +317,8 @@ def trafo_patches(coords, size, **kwargs):
     facecolor = kwargs.get("patch_facecolor", (1, 0, 0, 0))
     edgecolors = get_color_list(edgecolor, len(coords))
     facecolors = get_color_list(facecolor, len(coords))
-    linewidths = kwargs.get("linewidths", 2.)
-    linewidths = get_linewidth_list(linewidths, len(coords), name_entries="trafos")
+    linewidths = kwargs.get("linewidths", 1)
+    linewidths = 1#get_linewidth_list(linewidths, len(coords), name_entries="trafos")
     circles, lines = list(), list()
     for i, (p1, p2) in enumerate(coords):
         p1 = np.array(p1)
@@ -334,9 +334,9 @@ def trafo_patches(coords, size, **kwargs):
         circ1 = (0.5 - off / d) * (p1 - p2) + p2
         circ2 = (0.5 + off / d) * (p1 - p2) + p2
         circles.append(Circle(circ1, size_this, fc=facecolors[i], ec=edgecolors[i],
-                              lw=linewidths[i]))
+                              lw=1))
         circles.append(Circle(circ2, size_this, fc=facecolors[i], ec=edgecolors[i],
-                              lw=linewidths[i]))
+                              lw=1))
 
         lp1 = (0.5 - off / d - size_this / d) * (p2 - p1) + p1
         lp2 = (0.5 - off / d - size_this / d) * (p1 - p2) + p2

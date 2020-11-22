@@ -119,7 +119,7 @@ def add_cmap_to_collection(collection, cmap, norm, z, cbar_title, plot_colormap=
     return collection
 
 
-def _create_node_collection(nodes, coords, size=5, patch_type="circle", color=None, picker=False,
+def _create_node_collection(nodes, coords, size=5, patch_type="circle", color='blue', picker=False,
                             infos=None, **kwargs):
     """
     Creates a collection with patches for the given nodes. Can be used generically for different \
@@ -198,7 +198,7 @@ def _create_line2d_collection(coords, indices, infos=None, picker=False, **kwarg
     return lc
 
 
-def _create_node_element_collection(node_coords, patch_maker, size=1., infos=None,
+def _create_node_element_collection(node_coords, patch_maker, size=3, infos=None,
                                     repeat_infos=(1, 1), orientation=np.pi, picker=False,
                                     patch_facecolor="w", patch_edgecolor="k", line_color="k",
                                     **kwargs):
@@ -249,15 +249,16 @@ def _create_node_element_collection(node_coords, patch_maker, size=1., infos=Non
         infos_lc = list(np.repeat(infos, repeat_infos[1]))
 
     lines, polys, popped_keywords = patch_maker(
-        node_coords, size, angles, patch_facecolor=patch_facecolor, patch_edgecolor=patch_edgecolor,
+        node_coords, size, angles, patch_facecolor=patch_facecolor, patch_edgecolor='blue',
         **kwargs)
     for kw in set(popped_keywords) & set(kwargs.keys()):
         kwargs.pop(kw)
     patch_coll = PatchCollection(polys, match_original=True, picker=picker, **kwargs)
-    line_coll = LineCollection(lines, color=line_color, picker=picker, **kwargs)
+    line_coll = LineCollection(lines, color='blue', picker=picker, **kwargs)
     patch_coll.info = infos_pc
     line_coll.info = infos_lc
     return patch_coll, line_coll
+
 
 
 def _create_complex_branch_collection(coords, patch_maker, size=1, infos=None, repeat_infos=(2, 2),
@@ -309,9 +310,10 @@ def _create_complex_branch_collection(coords, patch_maker, size=1, infos=None, r
                                                   patch_edgecolor=patch_edgecolor, **kwargs)
     for kw in set(popped_keywords) & set(kwargs.keys()):
         kwargs.pop(kw)
-    patch_coll = PatchCollection(patches, match_original=True, picker=picker, **kwargs)
+
     line_coll = LineCollection(lines, color=line_color, picker=picker, linewidths=linewidths,
                                **kwargs)
+    patch_coll = PatchCollection(patches, match_original=True, picker=picker, **kwargs)
     patch_coll.info = infos_pc
     line_coll.info = infos_lc
     return patch_coll, line_coll
@@ -604,7 +606,7 @@ def create_trafo_collection(net, trafos=None, picker=False, size=None, infofunc=
         return None
 
     colors = kwargs.pop("color", "k")
-    linewidths = kwargs.pop("linewidths", 2.)
+    linewidths = kwargs.pop("linewidths", 1)
     linewidths = kwargs.pop("linewidth", linewidths)
     linewidths = kwargs.pop("lw", linewidths)
     if cmap is not None:
@@ -872,7 +874,7 @@ def create_sgen_collection(net, sgens=None, size=1., infofunc=None, orientation=
     return sgen_pc, sgen_lc
 
 
-def create_ext_grid_collection(net, size=1., infofunc=None, orientation=0, picker=False,
+def create_ext_grid_collection(net, size=1.5, infofunc=None, orientation=0, picker=False,
                                ext_grids=None, ext_grid_buses=None, **kwargs):
     """
     Creates a matplotlib patch collection of pandapower ext_grid. Parameters
